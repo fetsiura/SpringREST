@@ -1,15 +1,12 @@
 package pl.jaro.web;
 
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import pl.jaro.model.Book;
 import pl.jaro.service.BookService;
-import pl.jaro.service.MockBookService;
 
 import java.util.List;
 
@@ -32,14 +29,33 @@ public class BookController {
     }
 
 
+    @PostMapping
+    public void addBook(@RequestBody Book book){
+        bookService.addBook(book);
+    }
 
 
+    @GetMapping("/{id}")
+    public Book getBook(@PathVariable Long id){
+
+       return bookService.get(id).orElseThrow( () -> {
+           throw  new ResponseStatusException(HttpStatus.NOT_FOUND, "book does not found");
+       });
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteBook(@PathVariable Long id){
+        bookService.delete(id);
+    }
 
 
+    @PutMapping
+    public void updateBook(@RequestBody Book book){
+        bookService.update(book);
+    }
 
 
-
-
+////////////////////////
     @GetMapping("/helloBook")
     public Book helloBook() {
         return new Book(1L, "9788324631766", "Thinking in Java",

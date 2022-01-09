@@ -9,6 +9,7 @@ import pl.jaro.model.Book;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 @Slf4j
@@ -29,4 +30,32 @@ public class MockBookService implements BookService{
         log.info("Książki dodane");
     }
 
+
+    @Override
+    public void addBook(Book book) {
+        book.setId(nextId++);
+        books.add(book);
+        log.info("Książka dodana {}",book);
+    }
+
+    @Override
+    public Optional<Book> get(Long id) {
+        return books.stream().filter(book ->  book.getId().equals(id)).findFirst();
+    }
+
+    @Override
+    public void delete(Long id) {
+        if(get(id).isPresent()){
+            log.info("Kasuję książkę o id {}",id);
+            books.remove(get(id).get());
+        }
+    }
+
+    @Override
+    public void update(Book book) {
+        if(get(book.getId()).isPresent()){
+            int indexOf = books.indexOf(get(book.getId()).get());
+            books.set(indexOf, book);
+        }
+    }
 }
